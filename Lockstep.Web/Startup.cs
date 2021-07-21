@@ -1,9 +1,14 @@
+using Lockstep.Domain.DAO;
+using Lockstep.Web.Background;
 using Lockstep.Web.Data;
+using LockStep2.Repo.Repositories;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.Azure.Management.AppService.Fluent.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Lockstep.Web
@@ -31,6 +37,23 @@ namespace Lockstep.Web
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
+
+            //=====================================================================
+            services
+                .Configure<SiteConfig>(Configuration.GetSection("SiteConfig"));
+            services.AddHttpClient();
+           
+            services.AddTransient<IAuthorRepository, AuthorRepository>();
+            services.AddTransient<IBookRepository, BookRepository>();
+            services.AddTransient<IGenreRepository, GenreRepository>();
+            services.AddTransient<ICheckRepository, CheckRepository>();
+            services.AddTransient<IPaymentRepository, PaymentRepository>();
+            services.AddTransient<IPriceRepository, PriceRepository>();
+
+            //services.AddHostedService<TestService>();
+            services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            //=====================================================================
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();

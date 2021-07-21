@@ -29,7 +29,8 @@ namespace Lockstep.Web.Background
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    var specs = await File.ReadAllLinesAsync("Path to file");
+                    var specs = await File.ReadAllLinesAsync("C:\\Users\\КахарГ.NEW\\source\\repos", stoppingToken);
+                    _logger.LogError("TIK-TAK");
                     Thread.Sleep(2000);
                 }
             }
