@@ -1,9 +1,11 @@
 ﻿using Lockstep.Domain.DAO.Common;
 using Lockstep.Web.CQRS.Commands;
 using Lockstep.Web.CQRS.Queries;
+using Lockstep.Web.Hubs;
 using Lockstep.Web.Models;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -23,17 +25,20 @@ namespace Lockstep.Web.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly SiteConfig _siteConfig;
         private readonly IMediator _mediator;
+        private readonly IHubContext<ChatHub> _hub;
 
         public HomeController(ILogger<HomeController> logger, 
             IHttpClientFactory httpClientFactory, 
             IOptions<SiteConfig> options, 
             IConfiguration config,
-            IMediator mediator)
+            IMediator mediator,
+            IHubContext<ChatHub> hub)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _siteConfig = options.Value;
             _mediator = mediator;
+            _hub = hub;
         }
 
         public IActionResult Index()
@@ -63,8 +68,9 @@ namespace Lockstep.Web.Controllers
 
         //=========================================================================
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> PrivacyAsync()
         {
+            await _hub.Clients.All.SendAsync("ReceiveMessage", "site", "hello");
             return View();
         }
         private async Task<string> GetAsync(string url, Dictionary<string, string> @params, CancellationToken cancellationToken)

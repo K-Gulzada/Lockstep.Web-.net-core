@@ -1,6 +1,7 @@
 using Lockstep.Domain.DAO;
 using Lockstep.Web.Background;
 using Lockstep.Web.Data;
+using Lockstep.Web.Hubs;
 using LockStep2.Repo.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -52,6 +53,7 @@ namespace Lockstep.Web
 
             //services.AddHostedService<TestService>();
             services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddSignalR();
 
             //=====================================================================
 
@@ -88,7 +90,10 @@ namespace Lockstep.Web
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
+                endpoints.MapHub<ChatHub>("/chat");
             });
         }
     }
 }
+
+
